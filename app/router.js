@@ -6,27 +6,44 @@ Backbone.$ = $;
 
 
 var TitleView = require('./views/title')
+var DocsView = require('./views/docs')
 
 module.exports = Backbone.Router.extend({
     routes: {
         "title": "title",
+        "docs": "docs",
         "*actions": "defaultRoute" // Backbone will try match the route above first
     },
 
+    pages: [
+        'title',
+        'docs',
+    ],
+
     initialize: function(options) {
         this.appView = options.appView;
-        $(document).keydown(_.bind(this.handleKeyDown, this))
+        $(document).keydown(_.bind(this.handleKeyDown, this));
+        this.currentPage = 0;
     },
 
     title: function() {
         var titleView = new TitleView();
         titleView.render();
         this.appView.update(titleView.el);
+        this.currentPage = this.pages.indexOf('title');
         console.log("title done");
     },
 
+    docs: function() {
+        var docsView = new DocsView();
+        docsView.render();
+        this.appView.update(docsView.el);
+        this.currentPage = this.pages.indexOf('docs');
+        console.log("docs done");
+    },
+
     defaultRoute: function(actions) {
-        this.navigate("title");
+        this.navigate("title", {trigger: true});
     },
 
     handleKeyDown: function(event) {
@@ -45,7 +62,7 @@ module.exports = Backbone.Router.extend({
                 this.prev();
                 break;
             case 27:  // esc
-                this.navigate("title");
+                this.navigate("title", {trigger: true});
                 break;
             default:
                 return;
@@ -54,9 +71,24 @@ module.exports = Backbone.Router.extend({
 
     next: function() {
         console.log('next!');
+        this.currentPage++;
+
+        if (this.currentPage >= this.pages.length) {
+            this.currentPage = 0;
+        }
+        console.log("Navigating to " + this.pages[this.currentPage]);
+        this.navigate(this.pages[this.currentPage], {trigger: true});
     },
 
     prev: function() {
         console.log('prev!');
+        this.currentPage--;
+
+        if (this.currentPage < 0) {
+            this.currentPage = this.pages.length - 1;
+        }
+
+        console.log("Navigating to " + this.pages[this.currentPage]);
+        this.navigate(this.pages[this.currentPage], {trigger: true});
     }
 });
