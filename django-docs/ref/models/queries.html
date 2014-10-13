@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Query-related classes &mdash; Django 1.7 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Django 1.7 documentation" href="../../index.html" />
+    <link rel="up" title="Models" href="index.html" />
+    <link rel="next" title="Lookup API reference" href="lookups.html" />
+    <link rel="prev" title="QuerySet API reference" href="querysets.html" />
+
+
+
+ 
+<script type="text/javascript" src="../../templatebuiltins.js"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='" + base + "#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='" + base + "#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+
+
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../../index.html">Django 1.7 documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../../index.html">Home</a>  |
+        <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../../genindex.html">Index</a>  |
+        <a title="Module index" href="../../py-modindex.html">Modules</a>
+      </div>
+      <div class="nav">
+    &laquo; <a href="querysets.html" title="QuerySet API reference">previous</a>
+     |
+    <a href="../index.html" title="API Reference" accesskey="U">up</a>
+   |
+    <a href="lookups.html" title="Lookup API reference">next</a> &raquo;</div>
+    </div>
+
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="ref-models-queries">
+            
+  <div class="section" id="s-query-related-classes">
+<span id="query-related-classes"></span><h1>Query-related classes<a class="headerlink" href="#query-related-classes" title="Permalink to this headline">¶</a></h1>
+<p>This document provides reference material for query-related tools not
+documented elsewhere.</p>
+<div class="section" id="s-f-expressions">
+<span id="f-expressions"></span><h2><tt class="docutils literal"><span class="pre">F()</span></tt> expressions<a class="headerlink" href="#f-expressions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.F">
+<em class="property">class </em><tt class="descname">F</tt><a class="headerlink" href="#django.db.models.F" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>An <tt class="docutils literal"><span class="pre">F()</span></tt> object represents the value of a model field. It makes it possible
+to refer to model field values and perform database operations using them
+without actually having to pull them out of the database into Python memory.</p>
+<p>Instead, Django uses the <tt class="docutils literal"><span class="pre">F()</span></tt> object to generate a SQL expression that
+describes the required operation at the database level.</p>
+<p>This is easiest to understand through an example. Normally, one might do
+something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Tintin filed a news story!</span>
+<span class="n">reporter</span> <span class="o">=</span> <span class="n">Reporters</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Tintin&#39;</span><span class="p">)</span>
+<span class="n">reporter</span><span class="o">.</span><span class="n">stories_filed</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="n">reporter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here, we have pulled the value of <tt class="docutils literal"><span class="pre">reporter.stories_filed</span></tt> from the database
+into memory and manipulated it using familiar Python operators, and then saved
+the object back to the database. But instead we could also have done:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">F</span>
+<span class="n">reporter</span> <span class="o">=</span> <span class="n">Reporters</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Tintin&#39;</span><span class="p">)</span>
+<span class="n">reporter</span><span class="o">.</span><span class="n">stories_filed</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="s">&#39;stories_filed&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">reporter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Although <tt class="docutils literal"><span class="pre">reporter.stories_filed</span> <span class="pre">=</span> <span class="pre">F('stories_filed')</span> <span class="pre">+</span> <span class="pre">1</span></tt> looks like a
+normal Python assignment of value to an instance attribute, in fact it&#8217;s an SQL
+construct describing an operation on the database.</p>
+<p>When Django encounters an instance of <tt class="docutils literal"><span class="pre">F()</span></tt>, it overrides the standard Python
+operators to create an encapsulated SQL expression; in this case, one which
+instructs the database to increment the database field represented by
+<tt class="docutils literal"><span class="pre">reporter.stories_filed</span></tt>.</p>
+<p>Whatever value is or was on <tt class="docutils literal"><span class="pre">reporter.stories_filed</span></tt>, Python never gets to
+know about it - it is dealt with entirely by the database. All Python does,
+through Django&#8217;s <tt class="docutils literal"><span class="pre">F()</span></tt> class, is create the SQL syntax to refer to the field
+and describe the operation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>In order to access the new value that has been saved in this way, the object
+will need to be reloaded:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">reporter</span> <span class="o">=</span> <span class="n">Reporters</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">reporter</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>As well as being used in operations on single instances as above, <tt class="docutils literal"><span class="pre">F()</span></tt> can
+be used on <tt class="docutils literal"><span class="pre">QuerySets</span></tt> of object instances, with <tt class="docutils literal"><span class="pre">update()</span></tt>. This reduces
+the two queries we were using above - the <tt class="docutils literal"><span class="pre">get()</span></tt> and the
+<a class="reference internal" href="instances.html#django.db.models.Model.save" title="django.db.models.Model.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a> - to just one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">reporter</span> <span class="o">=</span> <span class="n">Reporters</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Tintin&#39;</span><span class="p">)</span>
+<span class="n">reporter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stories_filed</span><span class="o">=</span><span class="n">F</span><span class="p">(</span><span class="s">&#39;stories_filed&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also use <a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.update" title="django.db.models.query.QuerySet.update"><tt class="xref py py-meth docutils literal"><span class="pre">update()</span></tt></a> to increment
+the field value on multiple objects - which could be very much faster than
+pulling them all into Python from the database, looping over them, incrementing
+the field value of each one, and saving each one back to the database:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Reporter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stories_filed</span><span class="o">=</span><span class="n">F</span><span class="p">(</span><span class="s">&#39;stories_filed&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">F()</span></tt> therefore can offer performance advantages by:</p>
+<ul class="simple">
+<li>getting the database, rather than Python, to do work</li>
+<li>reducing the number of queries some operations require</li>
+</ul>
+<div class="section" id="s-avoiding-race-conditions-using-f">
+<span id="s-id1"></span><span id="avoiding-race-conditions-using-f"></span><span id="id1"></span><h3>Avoiding race conditions using <tt class="docutils literal"><span class="pre">F()</span></tt><a class="headerlink" href="#avoiding-race-conditions-using-f" title="Permalink to this headline">¶</a></h3>
+<p>Another useful benefit of <tt class="docutils literal"><span class="pre">F()</span></tt> is that having the database - rather than
+Python - update a field&#8217;s value avoids a <em>race condition</em>.</p>
+<p>If two Python threads execute the code in the first example above, one thread
+could retrieve, increment, and save a field&#8217;s value after the other has
+retrieved it from the database. The value that the second thread saves will be
+based on the original value; the work of the first thread will simply be lost.</p>
+<p>If the database is responsible for updating the field, the process is more
+robust: it will only ever update the field based on the value of the field in
+the database when the <a class="reference internal" href="instances.html#django.db.models.Model.save" title="django.db.models.Model.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a> or <tt class="docutils literal"><span class="pre">update()</span></tt> is executed, rather
+than based on its value when the instance was retrieved.</p>
+</div>
+<div class="section" id="s-using-f-in-filters">
+<span id="using-f-in-filters"></span><h3>Using <tt class="docutils literal"><span class="pre">F()</span></tt> in filters<a class="headerlink" href="#using-f-in-filters" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">F()</span></tt> is also very useful in <tt class="docutils literal"><span class="pre">QuerySet</span></tt> filters, where they make it
+possible to filter a set of objects against criteria based on their field
+values, rather than on Python values.</p>
+<p>This is documented in <a class="reference internal" href="../../topics/db/queries.html#using-f-expressions-in-filters"><em>using F() expressions in queries</em></a></p>
+</div>
+<div class="section" id="s-supported-operations-with-f">
+<span id="supported-operations-with-f"></span><h3>Supported operations with <tt class="docutils literal"><span class="pre">F()</span></tt><a class="headerlink" href="#supported-operations-with-f" title="Permalink to this headline">¶</a></h3>
+<p>As well as addition, Django supports subtraction, multiplication, division,
+and modulo arithmetic with <tt class="docutils literal"><span class="pre">F()</span></tt> objects, using Python constants,
+variables, and even other <tt class="docutils literal"><span class="pre">F()</span></tt> objects.</p>
+<div class="versionadded">
+<span class="title">New in Django 1.7:</span> <p>The power operator <tt class="docutils literal"><span class="pre">**</span></tt> is also supported.</p>
+</div>
+</div>
+</div>
+<div class="section" id="s-q-objects">
+<span id="q-objects"></span><h2><tt class="docutils literal"><span class="pre">Q()</span></tt> objects<a class="headerlink" href="#q-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="django.db.models.Q">
+<em class="property">class </em><tt class="descname">Q</tt><a class="headerlink" href="#django.db.models.Q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>A <tt class="docutils literal"><span class="pre">Q()</span></tt> object, like an <a class="reference internal" href="#django.db.models.F" title="django.db.models.F"><tt class="xref py py-class docutils literal"><span class="pre">F</span></tt></a> object, encapsulates a
+SQL expression in a Python object that can be used in database-related
+operations.</p>
+<p>In general, <tt class="docutils literal"><span class="pre">Q()</span> <span class="pre">objects</span></tt> make it possible to define and reuse conditions.
+This permits the <a class="reference internal" href="../../topics/db/queries.html#complex-lookups-with-q"><em>construction of complex database queries</em></a> using <tt class="docutils literal"><span class="pre">|</span></tt> (<tt class="docutils literal"><span class="pre">OR</span></tt>) and <tt class="docutils literal"><span class="pre">&amp;</span></tt> (<tt class="docutils literal"><span class="pre">AND</span></tt>) operators;
+in particular, it is not otherwise possible to use <tt class="docutils literal"><span class="pre">OR</span></tt> in <tt class="docutils literal"><span class="pre">QuerySets</span></tt>.</p>
+</div>
+<div class="section" id="s-prefetch-objects">
+<span id="prefetch-objects"></span><h2><tt class="docutils literal"><span class="pre">Prefetch()</span></tt> objects<a class="headerlink" href="#prefetch-objects" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<span class="title">New in Django 1.7.</span> </div>
+<dl class="class">
+<dt id="django.db.models.Prefetch">
+<em class="property">class </em><tt class="descname">Prefetch</tt>(<em>lookup</em>, <em>queryset=None</em>, <em>to_attr=None</em>)<a class="headerlink" href="#django.db.models.Prefetch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>The <tt class="docutils literal"><span class="pre">Prefetch()</span></tt> object can be used to control the operation of
+<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.prefetch_related" title="django.db.models.query.QuerySet.prefetch_related"><tt class="xref py py-meth docutils literal"><span class="pre">prefetch_related()</span></tt></a>.</p>
+<p>The <tt class="docutils literal"><span class="pre">lookup</span></tt> argument describes the relations to follow and works the same
+as the string based lookups passed to
+<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.prefetch_related" title="django.db.models.query.QuerySet.prefetch_related"><tt class="xref py py-meth docutils literal"><span class="pre">prefetch_related()</span></tt></a>.</p>
+<p>The <tt class="docutils literal"><span class="pre">queryset</span></tt> argument supplies a base <tt class="docutils literal"><span class="pre">QuerySet</span></tt> for the given lookup.
+This is useful to further filter down the prefetch operation, or to call
+<a class="reference internal" href="querysets.html#django.db.models.query.QuerySet.select_related" title="django.db.models.query.QuerySet.select_related"><tt class="xref py py-meth docutils literal"><span class="pre">select_related()</span></tt></a> from the prefetched
+relation, hence reducing the number of queries even further.</p>
+<p>The <tt class="docutils literal"><span class="pre">to_attr</span></tt> argument sets the result of the prefetch operation to a custom
+attribute.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When using <tt class="docutils literal"><span class="pre">to_attr</span></tt> the prefetched result is stored in a list.
+This can provide a significant speed improvement over traditional
+<tt class="docutils literal"><span class="pre">prefetch_related</span></tt> calls which store the cached result within a
+<tt class="docutils literal"><span class="pre">QuerySet</span></tt> instance.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Query-related classes</a><ul>
+<li><a class="reference internal" href="#f-expressions"><tt class="docutils literal"><span class="pre">F()</span></tt> expressions</a><ul>
+<li><a class="reference internal" href="#avoiding-race-conditions-using-f">Avoiding race conditions using <tt class="docutils literal"><span class="pre">F()</span></tt></a></li>
+<li><a class="reference internal" href="#using-f-in-filters">Using <tt class="docutils literal"><span class="pre">F()</span></tt> in filters</a></li>
+<li><a class="reference internal" href="#supported-operations-with-f">Supported operations with <tt class="docutils literal"><span class="pre">F()</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#q-objects"><tt class="docutils literal"><span class="pre">Q()</span></tt> objects</a></li>
+<li><a class="reference internal" href="#prefetch-objects"><tt class="docutils literal"><span class="pre">Prefetch()</span></tt> objects</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="querysets.html">QuerySet API reference</a></li>
+    
+    
+      <li>Next: <a href="lookups.html">Lookup API reference</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">Django 1.7 documentation</a>
+        
+          <ul><li><a href="../index.html">API Reference</a>
+        
+          <ul><li><a href="index.html">Models</a>
+        
+        <ul><li>Query-related classes</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/ref/models/queries.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+              <h3>Last update:</h3>
+              <p class="topless">Oct 12, 2014</p>
+          </div>
+        
+      
+    </div>
+
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="querysets.html" title="QuerySet API reference">previous</a>
+     |
+    <a href="../index.html" title="API Reference" accesskey="U">up</a>
+   |
+    <a href="lookups.html" title="Lookup API reference">next</a> &raquo;</div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

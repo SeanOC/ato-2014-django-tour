@@ -1,0 +1,18 @@
+#title-slide {
+  background-color: #092E20;
+  color: white;
+  text-align: center; }
+  #title-slide .tour-text {
+    text-align: center;
+    font-size: 20vh;
+    font-weight: bold;
+    color: #ffc757;
+    margin-top: 2vh; }
+  #title-slide .django-logo {
+    margin: 2vh auto;
+    height: 50vh; }
+  #title-slide .sub-title {
+    color: #93cb46;
+    font-size: 7vh; }
+
+/*# sourceMappingURL=title.css.map */

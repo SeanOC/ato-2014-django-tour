@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>django.contrib.formtools.preview &mdash; Django 1.7 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Django 1.7 documentation" href="../../../../index.html" />
+    <link rel="up" title="django" href="../../../django.html" />
+
+
+
+ 
+<script type="text/javascript" src="../../../../templatebuiltins.js"></script>
+<script type="text/javascript">
+(function($) {
+    if (!django_template_builtins) {
+       // templatebuiltins.js missing, do nothing.
+       return;
+    }
+    $(document).ready(function() {
+        // Hyperlink Django template tags and filters
+        var base = "../../../../ref/templates/builtins.html";
+        if (base == "#") {
+            // Special case for builtins.html itself
+            base = "";
+        }
+        // Tags are keywords, class '.k'
+        $("div.highlight\\-html\\+django span.k").each(function(i, elem) {
+             var tagname = $(elem).text();
+             if ($.inArray(tagname, django_template_builtins.ttags) != -1) {
+                 var fragment = tagname.replace(/_/, '-');
+                 $(elem).html("<a href='" + base + "#" + fragment + "'>" + tagname + "</a>");
+             }
+        });
+        // Filters are functions, class '.nf'
+        $("div.highlight\\-html\\+django span.nf").each(function(i, elem) {
+             var filtername = $(elem).text();
+             if ($.inArray(filtername, django_template_builtins.tfilters) != -1) {
+                 var fragment = filtername.replace(/_/, '-');
+                 $(elem).html("<a href='" + base + "#" + fragment + "'>" + filtername + "</a>");
+             }
+        });
+    });
+})(jQuery);
+</script>
+
+
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../../../../index.html">Django 1.7 documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../../../../index.html">Home</a>  |
+        <a title="Table of contents" href="../../../../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../../../../genindex.html">Index</a>  |
+        <a title="Module index" href="../../../../py-modindex.html">Modules</a>
+      </div>
+      <div class="nav">
+    <a href="../../../index.html" title="Module code" accesskey="U">up</a></div>
+    </div>
+
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="_modules-django-contrib-formtools-preview">
+            
+  <h1>Source code for django.contrib.formtools.preview</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Formtools Preview application.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render_to_response</span>
+<span class="kn">from</span> <span class="nn">django.template.context</span> <span class="kn">import</span> <span class="n">RequestContext</span>
+<span class="kn">from</span> <span class="nn">django.utils.crypto</span> <span class="kn">import</span> <span class="n">constant_time_compare</span>
+<span class="kn">from</span> <span class="nn">django.contrib.formtools.utils</span> <span class="kn">import</span> <span class="n">form_hmac</span>
+
+<span class="n">AUTO_ID</span> <span class="o">=</span> <span class="s">&#39;formtools_</span><span class="si">%s</span><span class="s">&#39;</span>  <span class="c"># Each form here uses this as its auto_id parameter.</span>
+
+
+<div class="viewcode-block" id="FormPreview"><a class="viewcode-back" href="../../../../ref/contrib/formtools/form-preview.html#django.contrib.formtools.preview.FormPreview">[docs]</a><span class="k">class</span> <span class="nc">FormPreview</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">preview_template</span> <span class="o">=</span> <span class="s">&#39;formtools/preview.html&#39;</span>
+    <span class="n">form_template</span> <span class="o">=</span> <span class="s">&#39;formtools/form.html&#39;</span>
+
+    <span class="c"># METHODS SUBCLASSES SHOULDN&#39;T OVERRIDE ###################################</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="c"># form should be a Form class, not an instance.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">form</span><span class="p">,</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;1&#39;</span><span class="p">:</span> <span class="s">&#39;preview&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">:</span> <span class="s">&#39;post&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unused_name</span><span class="p">(</span><span class="s">&#39;stage&#39;</span><span class="p">)),</span> <span class="s">&#39;preview&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_params</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span>
+        <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">unused_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a first-choice name, adds an underscore to the name until it</span>
+<span class="sd">        reaches a name that isn&#39;t claimed by any field in the form.</span>
+
+<span class="sd">        This is calculated rather than being hard-coded so that no field names</span>
+<span class="sd">        are off-limits for use in the form.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">base_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">break</span>  <span class="c"># This field name isn&#39;t being used by the form.</span>
+            <span class="n">name</span> <span class="o">+=</span> <span class="s">&#39;_&#39;</span>
+        <span class="k">return</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">preview_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="s">&quot;Displays the form&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="n">auto_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_auto_id</span><span class="p">(),</span> <span class="n">initial</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_initial</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span>
+            <span class="n">context_instance</span><span class="o">=</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">preview_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="s">&quot;Validates the POST data. If valid, displays the preview page. Else, redisplays form.&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">,</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_auto_id</span><span class="p">())</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_preview</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+            <span class="n">context</span><span class="p">[</span><span class="s">&#39;hash_field&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unused_name</span><span class="p">(</span><span class="s">&#39;hash&#39;</span><span class="p">)</span>
+            <span class="n">context</span><span class="p">[</span><span class="s">&#39;hash_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">security_hash</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preview_template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">context_instance</span><span class="o">=</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">context_instance</span><span class="o">=</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_check_security_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">security_hash</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">constant_time_compare</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">post_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="s">&quot;Validates the POST data. If valid, calls done(). Else, redisplays form.&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">,</span> <span class="n">auto_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_auto_id</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_security_hash</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unused_name</span><span class="p">(</span><span class="s">&#39;hash&#39;</span><span class="p">),</span> <span class="s">&#39;&#39;</span><span class="p">),</span>
+                                             <span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_hash</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>  <span class="c"># Security hash failed.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_to_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">form_template</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span>
+                <span class="n">context_instance</span><span class="o">=</span><span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+
+    <span class="c"># METHODS SUBCLASSES MIGHT OVERRIDE IF APPROPRIATE ########################</span>
+
+    <span class="k">def</span> <span class="nf">get_auto_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hook to override the ``auto_id`` kwarg for the form. Needed when</span>
+<span class="sd">        rendering two form previews in the same template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">AUTO_ID</span>
+
+    <span class="k">def</span> <span class="nf">get_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes a request argument and returns a dictionary to pass to the form&#39;s</span>
+<span class="sd">        ``initial`` kwarg when the form is being created from an HTTP get.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">get_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="s">&quot;Context for template rendering.&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span> <span class="s">&#39;stage_field&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unused_name</span><span class="p">(</span><span class="s">&#39;stage&#39;</span><span class="p">),</span> <span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">parse_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given captured args and kwargs from the URLconf, saves something in</span>
+<span class="sd">        self.state and/or raises Http404 if necessary.</span>
+
+<span class="sd">        For example, this URLconf captures a user_id variable:</span>
+
+<span class="sd">            (r&#39;^contact/(?P&lt;user_id&gt;\d{1,6})/$&#39;, MyFormPreview(MyForm)),</span>
+
+<span class="sd">        In this case, the kwargs variable in parse_params would be</span>
+<span class="sd">        {&#39;user_id&#39;: 32} for a request to &#39;/contact/32/&#39;. You can use that</span>
+<span class="sd">        user_id to make sure it&#39;s a valid user and/or save it for later, for</span>
+<span class="sd">        use in done().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="FormPreview.process_preview"><a class="viewcode-back" href="../../../../ref/contrib/formtools/form-preview.html#django.contrib.formtools.preview.FormPreview.process_preview">[docs]</a>    <span class="k">def</span> <span class="nf">process_preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a validated form, performs any extra processing before displaying</span>
+<span class="sd">        the preview page, and saves any extra data in context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="k">def</span> <span class="nf">security_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the security hash for the given HttpRequest and Form instances.</span>
+
+<span class="sd">        Subclasses may want to take into account request-specific information,</span>
+<span class="sd">        such as the IP address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">form_hmac</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">failed_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="s">&quot;Returns an HttpResponse in the case of an invalid security hash.&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preview_post</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="c"># METHODS SUBCLASSES MUST OVERRIDE ########################################</span>
+
+    <span class="k">def</span> <span class="nf">done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">cleaned_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does something with the cleaned_data and returns an</span>
+<span class="sd">        HttpResponseRedirect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;You must define a done() method on your </span><span class="si">%s</span><span class="s"> subclass.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../../../index.html">Django 1.7 documentation</a>
+        
+          <ul><li><a href="../../../index.html">Module code</a>
+        
+          <ul><li><a href="../../../django.html">django</a>
+        
+        <ul><li>django.contrib.formtools.preview</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+              <h3>Last update:</h3>
+              <p class="topless">Oct 12, 2014</p>
+          </div>
+        
+      
+    </div>
+
+    <div id="ft">
+      <div class="nav">
+    <a href="../../../index.html" title="Module code" accesskey="U">up</a></div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>
