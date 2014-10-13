@@ -1,6 +1,6 @@
 {
 "version": 3,
-"mappings": "AACI,kBAAM;EACF,MAAM,EAAE,CAAC;EACT,MAAM,EAAE,KAAK;EACb,KAAK,EAAE,KAAK",
+"mappings": "AACI,kBAAM;EACF,MAAM,EAAE,CAAC;EACT,MAAM,EAAE,IAAI;EACZ,KAAK,EAAE,IAAI",
 "sources": ["../sass/docs.sass"],
 "names": [],
 "file": "docs.css"

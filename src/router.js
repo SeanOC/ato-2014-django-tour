@@ -2,11 +2,10 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
 
-Backbone.$ = $;
 
 
 var TitleView = require('./views/title')
-var DocsView = require('./views/docs')
+var DocsView = require('./views/docs.coffee')
 
 module.exports = Backbone.Router.extend({
     routes: {
@@ -43,6 +42,7 @@ module.exports = Backbone.Router.extend({
     },
 
     defaultRoute: function(actions) {
+        console.log("Default Route")
         this.navigate("title", {trigger: true});
     },
 

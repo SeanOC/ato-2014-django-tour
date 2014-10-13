@@ -18,36 +18,7 @@ var zoom = (function(){
     var panEngageTimeout = -1,
         panUpdateInterval = -1;
 
-    // Check for transform support so that we can fallback otherwise
-    var supportsTransforms =    'WebkitTransform' in document.body.style ||
-                                'MozTransform' in document.body.style ||
-                                'msTransform' in document.body.style ||
-                                'OTransform' in document.body.style ||
-                                'transform' in document.body.style;
-
-    if( supportsTransforms ) {
-        // The easing that will be applied when we zoom in/out
-        document.body.style.transition = 'transform 0.8s ease';
-        document.body.style.OTransition = '-o-transform 0.8s ease';
-        document.body.style.msTransition = '-ms-transform 0.8s ease';
-        document.body.style.MozTransition = '-moz-transform 0.8s ease';
-        document.body.style.WebkitTransition = '-webkit-transform 0.8s ease';
-    }
-
-    // Zoom out if the user hits escape
-    document.addEventListener( 'keyup', function( event ) {
-        if( level !== 1 && event.keyCode === 27 ) {
-            zoom.out();
-        }
-    } );
-
-    // Monitor mouse movement for panning
-    document.addEventListener( 'mousemove', function( event ) {
-        if( level !== 1 ) {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-        }
-    } );
+    var targetDoc = document
 
     /**
      * Applies the CSS required to zoom in, prefers the use of CSS3
@@ -71,48 +42,48 @@ var zoom = (function(){
         if( supportsTransforms ) {
             // Reset
             if( scale === 1 ) {
-                document.body.style.transform = '';
-                document.body.style.OTransform = '';
-                document.body.style.msTransform = '';
-                document.body.style.MozTransform = '';
-                document.body.style.WebkitTransform = '';
+                targetDoc.body.style.transform = '';
+                targetDoc.body.style.OTransform = '';
+                targetDoc.body.style.msTransform = '';
+                targetDoc.body.style.MozTransform = '';
+                targetDoc.body.style.WebkitTransform = '';
             }
             // Scale
             else {
                 var origin = scrollOffset.x +'px '+ scrollOffset.y +'px',
                     transform = 'translate('+ -rect.x +'px,'+ -rect.y +'px) scale('+ scale +')';
 
-                document.body.style.transformOrigin = origin;
-                document.body.style.OTransformOrigin = origin;
-                document.body.style.msTransformOrigin = origin;
-                document.body.style.MozTransformOrigin = origin;
-                document.body.style.WebkitTransformOrigin = origin;
+                targetDoc.body.style.transformOrigin = origin;
+                targetDoc.body.style.OTransformOrigin = origin;
+                targetDoc.body.style.msTransformOrigin = origin;
+                targetDoc.body.style.MozTransformOrigin = origin;
+                targetDoc.body.style.WebkitTransformOrigin = origin;
 
-                document.body.style.transform = transform;
-                document.body.style.OTransform = transform;
-                document.body.style.msTransform = transform;
-                document.body.style.MozTransform = transform;
-                document.body.style.WebkitTransform = transform;
+                targetDoc.body.style.transform = transform;
+                targetDoc.body.style.OTransform = transform;
+                targetDoc.body.style.msTransform = transform;
+                targetDoc.body.style.MozTransform = transform;
+                targetDoc.body.style.WebkitTransform = transform;
             }
         }
         else {
             // Reset
             if( scale === 1 ) {
-                document.body.style.position = '';
-                document.body.style.left = '';
-                document.body.style.top = '';
-                document.body.style.width = '';
-                document.body.style.height = '';
-                document.body.style.zoom = '';
+                targetDoc.body.style.position = '';
+                targetDoc.body.style.left = '';
+                targetDoc.body.style.top = '';
+                targetDoc.body.style.width = '';
+                targetDoc.body.style.height = '';
+                targetDoc.body.style.zoom = '';
             }
             // Scale
             else {
-                document.body.style.position = 'relative';
-                document.body.style.left = ( - ( scrollOffset.x + rect.x ) / scale ) + 'px';
-                document.body.style.top = ( - ( scrollOffset.y + rect.y ) / scale ) + 'px';
-                document.body.style.width = ( scale * 100 ) + '%';
-                document.body.style.height = ( scale * 100 ) + '%';
-                document.body.style.zoom = scale;
+                targetDoc.body.style.position = 'relative';
+                targetDoc.body.style.left = ( - ( scrollOffset.x + rect.x ) / scale ) + 'px';
+                targetDoc.body.style.top = ( - ( scrollOffset.y + rect.y ) / scale ) + 'px';
+                targetDoc.body.style.width = ( scale * 100 ) + '%';
+                targetDoc.body.style.height = ( scale * 100 ) + '%';
+                targetDoc.body.style.zoom = scale;
             }
         }
 
@@ -120,7 +91,7 @@ var zoom = (function(){
     }
 
     /**
-     * Pan the document when the mosue cursor approaches the edges
+     * Pan the targetDoc when the mosue cursor approaches the edges
      * of the window.
      */
     function pan() {
@@ -216,7 +187,7 @@ var zoom = (function(){
         },
 
         /**
-         * Resets the document zoom state to its default.
+         * Resets the targetDoc zoom state to its default.
          */
         out: function() {
             clearTimeout( panEngageTimeout );
@@ -233,6 +204,42 @@ var zoom = (function(){
 
         zoomLevel: function() {
             return level;
+        },
+
+        setTargetDoc: function( newDoc ) { 
+            targetDoc = newDoc;
+
+            // Check for transform support so that we can fallback otherwise
+            var supportsTransforms =    'WebkitTransform' in document.body.style ||
+                                        'MozTransform' in document.body.style ||
+                                        'msTransform' in document.body.style ||
+                                        'OTransform' in document.body.style ||
+                                        'transform' in document.body.style;
+
+            if( supportsTransforms ) {
+                // The easing that will be applied when we zoom in/out
+                targetDoc.body.style.transition = 'transform 0.8s ease';
+                targetDoc.body.style.OTransition = '-o-transform 0.8s ease';
+                targetDoc.body.style.msTransition = '-ms-transform 0.8s ease';
+                targetDoc.body.style.MozTransition = '-moz-transform 0.8s ease';
+                targetDoc.body.style.WebkitTransition = '-webkit-transform 0.8s ease';
+            }
+
+            // Zoom out if the user hits escape
+            targetDoc.addEventListener( 'keyup', function( event ) {
+                if( level !== 1 && event.keyCode === 27 ) {
+                    zoom.out();
+                }
+            } );
+
+            // Monitor mouse movement for panning
+            targetDoc.addEventListener( 'mousemove', function( event ) {
+                if( level !== 1 ) {
+                    mouseX = event.clientX;
+                    mouseY = event.clientY;
+                }
+            } );
+
         }
     }
 

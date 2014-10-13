@@ -1,11 +1,8 @@
 var Backbone = require('backbone');
-var $ = require('jquery');
-
-Backbone.$ = $;
 
 
-var AppView = require('./app/views/viewport');
-var AppRouter = require('./app/router');
+var AppView = require('./views/viewport');
+var AppRouter = require('./router');
 
 var appView = new AppView();
 

@@ -1,14 +1,13 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
-var template = require('../templates/docs.handlebars')
+var template = require('../templates/title.hbs')
 
 Backbone.$ = $;
 
 module.exports = Backbone.View.extend({
-    id: 'docs-slide',
-
+    id: 'title-slide',
     render: function() {
-        console.log("Render docs")
+        console.log("Render title")
         this.$el.html(template({}));
     }
 });

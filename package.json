@@ -1,42 +1,39 @@
 {
   "name": "ato-django-talk",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "repository": "",
+  "version": "0.1.0",
+  "devDependencies": {
+    "browserify": "~2.34",
+    "grunt": "~0.4.1",
+    "grunt-browserify": "~1.2.8",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-handlebarsify": "^0.4.0"
+  },
   "dependencies": {
     "backbone": "^1.1.2",
-    "beefy": "^2.1.1",
     "browserify-handlebars": "^0.2.0",
-    "browserify-swap": "^0.2.1",
+    "browserify-shim": "^3.8.0",
+    "coffeeify": "^0.7.0",
+    "grunt-contrib-connect": "^0.8.0",
+    "grunt-contrib-uglify": "^0.6.0",
+    "grunt-contrib-watch": "^0.6.1",
     "handlebars": "^1.3.0",
-    "jquery": "^2.1.1",
-    "lodash": "^2.4.1",
-    "watchify": "^2.0.0"
+    "lodash": "^2.4.1"
   },
-  "devDependencies": {
-    "beefy": "^2.1.1",
-    "browserify": "^6.0.3"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "beefy index.js:bundle.js",
-    "bundle": "browserify index.js -o bundle.js"
-  },
-  "author": "",
-  "license": "ISC",
-   "browserify": {
+  "browserify": {
     "transform": [
-      "browserify-swap",
-      "browserify-handlebars"
+      "browserify-shim",
+      "browserify-handlebars",
+      "coffeeify"
     ]
   },
-  "browserify-swap": {
-    "@packages": [
-      "underscore"
-    ],
-    "all": {
-      "underscore.js$": "lodash"
-    }
+  "browser": {
+    "jquery": "./vendor/jquery-2.1.1.js"
+  },
+  "browserify-shim": {
+    "jquery": "$",
+    "lodash": "_",
+    "backbone": {"exports": "Backbone", "depends": ["lodash:underscore", "jquery:jQuery"]}
   }
 }
