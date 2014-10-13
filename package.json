@@ -29,10 +29,12 @@
     ]
   },
   "browser": {
-    "jquery": "./vendor/jquery-2.1.1.js"
+    "jquery": "./vendor/jquery-2.1.1.js",
+    "jquery.zoomooz": "./vendor/jquery.zoomooz.js"
   },
   "browserify-shim": {
     "jquery": "$",
+    "jquery.zoomooz": {"depends": ["jquery:$"]},
     "lodash": "_",
     "backbone": {"exports": "Backbone", "depends": ["lodash:underscore", "jquery:jQuery"]}
   }

@@ -9,10 +9,16 @@ module.exports = Backbone.View.extend
         console.log "Render docs"
         @.$el.html template()
 
+        # $docsContainer = @.$('#docs-container')
+        # $docsContainer.load "django-docs/index.html", ->
+        #     console.log $docsContainer.find '#s-the-model-layer'
         $iframe = @.$('iframe')
 
         $iframe.load ->
-            innerDoc = $iframe[0].contentDocument
-            $innerDoc = $(innerDoc)
-            example = $innerDoc.find('#s-forms')
-            # example.zoomTo()
+            iframe = $iframe[0]
+
+            example = iframe.contentWindow.$('#s-forms')
+
+            console.log example
+
+            example.zoomTo()
