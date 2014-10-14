@@ -1,24 +1,31 @@
 Backbone = require 'backbone'
+_ = require 'lodash'
 $ = require 'jquery'
 template = require '../templates/docs.hbs'
 
 module.exports = Backbone.View.extend 
-    id: 'docs-slide',
+    className: 'docs-slide',
+
+    initialize: (options) ->
+        console.log "Initialize docsview"
+        console.log options
+        @.targetURL = options.targetURL
 
     render: ->
         console.log "Render docs"
-        @.$el.html template()
+        @.$el.html template targetURL: @.targetURL
 
         # $docsContainer = @.$('#docs-container')
         # $docsContainer.load "django-docs/index.html", ->
         #     console.log $docsContainer.find '#s-the-model-layer'
         $iframe = @.$('iframe')
 
-        $iframe.load ->
-            iframe = $iframe[0]
+        $iframe.load _.bind @.onIFrameLoad, @
 
-            example = iframe.contentWindow.$('#s-forms')
-
-            console.log example
-
-            example.zoomTo()
+    onIFrameLoad: ->
+        console.log 'here'
+        console.log @
+        $iframe = @.$('iframe')
+        iframe = $iframe[0]
+        example = iframe.contentWindow.$('#s-getting-help')
+        example.zoomTo()
