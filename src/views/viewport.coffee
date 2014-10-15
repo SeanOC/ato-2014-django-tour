@@ -4,10 +4,14 @@ $ = require 'jquery'
 module.exports = Backbone.View.extend
     id: 'viewport'
 
-    update: (content) ->
-        $children = @.$el.children()
+    update: (contentView) ->
+        if contentView == @.currentContentView
+            return
 
+        $children = @.$el.children()
         if $children.length > 0
             @.$el.empty()
 
-        @.$el.html content
+        @.currentContentView = contentView
+        contentView.render()
+        @.$el.html contentView.el
