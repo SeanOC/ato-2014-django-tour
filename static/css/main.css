@@ -33,9 +33,55 @@ a:link {
     color: #93cb46;
     font-size: 7vh; }
 
+#who-slide .top-half {
+  background-color: white;
+  height: 40vh;
+  width: 100vw;
+  padding-top: 5vh; }
+#who-slide .bottom-half {
+  padding-top: 5vh;
+  height: 50vh;
+  width: 100%; }
+#who-slide .chauncey {
+  float: right;
+  margin-right: 20vw; }
+  #who-slide .chauncey img {
+    height: 35vh; }
+#who-slide .headshot {
+  float: left;
+  margin-left: 20vw; }
+  #who-slide .headshot img {
+    height: 30vh;
+    margin-bottom: 2px; }
+#who-slide .sub-title {
+  margin-top: 0.5vh;
+  text-align: center;
+  font-weight: bold;
+  font-size: 4vh;
+  color: #092E20; }
+#who-slide .django-nyc {
+  float: left;
+  margin-left: 12vw;
+  margin-top: 7vh; }
+  #who-slide .django-nyc img {
+    width: 35vw; }
+#who-slide .djangocon {
+  float: right;
+  margin-right: 12vw; }
+  #who-slide .djangocon img {
+    width: 35vw; }
+
 .docs-slide iframe {
   border: 0;
   height: 100%;
   width: 100%; }
+
+#django-slide {
+  text-align: center; }
+  #django-slide img {
+    margin-left: auto;
+    margin-right: auto;
+    height: 50vh;
+    margin-top: 10vh; }
 
 /*# sourceMappingURL=main.css.map */

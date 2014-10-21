@@ -8,9 +8,11 @@ module.exports = Backbone.View.extend
 
     steps: [
         'body',
+        '#s-first-steps',
         '#s-the-model-layer',
         '#s-the-view-layer',
         '#s-the-template-layer',
+        '#s-forms',
     ]
 
     initialize: (options) ->

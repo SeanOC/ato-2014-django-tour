@@ -1,0 +1,39 @@
+#who-slide .top-half {
+  background-color: white;
+  height: 40vh;
+  width: 100vw;
+  padding-top: 5vh; }
+#who-slide .bottom-half {
+  padding-top: 5vh;
+  height: 50vh;
+  width: 100%; }
+#who-slide .chauncey {
+  float: right;
+  margin-right: 20vw; }
+  #who-slide .chauncey img {
+    height: 35vh; }
+#who-slide .headshot {
+  float: left;
+  margin-left: 20vw; }
+  #who-slide .headshot img {
+    height: 30vh;
+    margin-bottom: 2px; }
+#who-slide .sub-title {
+  margin-top: 0.5vh;
+  text-align: center;
+  font-weight: bold;
+  font-size: 4vh;
+  color: #092E20; }
+#who-slide .django-nyc {
+  float: left;
+  margin-left: 12vw;
+  margin-top: 7vh; }
+  #who-slide .django-nyc img {
+    width: 35vw; }
+#who-slide .djangocon {
+  float: right;
+  margin-right: 12vw; }
+  #who-slide .djangocon img {
+    width: 35vw; }
+
+/*# sourceMappingURL=who.css.map */
