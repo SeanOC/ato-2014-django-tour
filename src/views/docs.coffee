@@ -50,6 +50,7 @@ module.exports = Backbone.View.extend
             console.log $node
             $node.zoomTo()
             if target != 'body'
-                $node.css 'background-color', 'yellow'
+                @.inner$('.talk-highlight').removeClass('talk-highlight')
+                $node.addClass('talk-highlight')
         else
             @.postLoadQueue.push _.bind(@.goTo, @, step)
