@@ -16,10 +16,72 @@ TEMPLATES =
     'framework': require './templates/framework.hbs'
     'opinionated-framework': require './templates/opinionated-framework.hbs'
 
+DOCSVIEWS =
+    'index': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            'body',
+            '#s-first-steps',
+            '#s-the-model-layer',
+            '#s-the-view-layer',
+            '#s-the-template-layer',
+            '#s-forms',
+            '#s-the-development-process',
+            '#s-the-admin',
+            '#s-security',
+            '#s-internationalization-and-localization',
+            '#s-performance-and-optimization',
+            '#s-python-compatibility',
+            '#s-geographic-framework',
+            '#s-common-web-application-tools',
+            '#s-other-core-functionalities',
+            '#s-the-django-open-source-project',
+            '#s-the-model-layer',
+        ]
+    'models': new DocsView
+        targetURL: 'django-docs/topics/db/models.html'
+        steps: [
+            'body',
+            '#s-quick-example .highlight-python',
+        ]
+    'queries': new DocsView
+        targetURL: 'django-docs/topics/db/queries.html'
+        steps: [
+            'body',
+            '#queryset-model-example',
+            '#s-creating-objects .highlight-python',
+            '#s-saving-changes-to-objects .highlight-python:first',
+            '#s-saving-changes-to-objects .highlight-python',
+            '#s-deleting-objects .highlight-python:first',
+            '#s-retrieving-all-objects .highlight-python',
+            '#s-retrieving-specific-objects-with-filters .highlight-python:first',
+            '#s-chaining-filters .highlight-python:first',
+        ]
+    'raw-queries': new DocsView
+        targetURL: 'django-docs/topics/db/sql.html'
+        steps: [
+            'body',
+            '#s-performing-raw-sql-queries .admonition:first'
+            '#s-performing-raw-queries .highlight-python:first',
+        ]
+    'db-migrations': new DocsView
+        targetURL: 'django-docs/topics/migrations.html'
+        steps: [
+            'body',
+            '#s-workflow .highlight-python:first',
+            '#s-workflow .highlight-python',
+            '#s-migration-files .highlight-python',
+        ]
+    'models-bonus': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            '#s-the-model-layer li:nth-child(5)',
+            '#s-the-model-layer li:nth-child(6)',
+        ]
+
 module.exports = Backbone.Router.extend
     routes:
-        "docs": "docs",
-        "docs/:step": "docs",
+        "docs/:viewName/:step": "docs",
         "*action": "defaultRoute"
 
     pages: [
@@ -30,23 +92,12 @@ module.exports = Backbone.Router.extend
         'not-cms',
         'framework',
         'opinionated-framework',
-        'docs/1',
-        'docs/2',
-        'docs/3',
-        'docs/4',
-        'docs/5',
-        'docs/6',
-        'docs/7',
-        'docs/8',
-        'docs/9',
-        'docs/10',
-        'docs/11',
-        'docs/12',
-        'docs/13',
-        'docs/14',
-        'docs/15',
-        'docs/16',
-        'docs/17',
+        'docs/index/*',
+        'docs/models/*',
+        'docs/queries/*',
+        'docs/raw-queries/*',
+        'docs/db-migrations/*',
+        'docs/models-bonus/*',
     ]
 
     initialize: (options) ->
@@ -54,24 +105,40 @@ module.exports = Backbone.Router.extend
         $(document).keydown _.bind(@.handleKeyDown, @)
         @.currentPage = 0
 
-        @.views = {}
+        @.templateViews = {}
         for templateName, template of TEMPLATES
-            @.views[templateName] = new SimpleTemplateView id: "#{ templateName }-slide", template: template
+            @.templateViews[templateName] = new SimpleTemplateView id: "#{ templateName }-slide", template: template
 
-        @.docsView = new DocsView targetURL: 'django-docs/index.html'
+        newPages = []
+        for page in @.pages
+            match = page.match(/docs\/([\-\w]+)\/*/)
+            if match != null
+                view = match[1]
+                stepNumber = 0
+                for step in DOCSVIEWS[view].steps
+                    stepNumber++
+                    newPages.push "docs/#{ view }/#{ stepNumber }"
+            else
+                newPages.push page
 
-    docs: (step) ->
+        @.pages = newPages
+        console.log @.pages
+
+
+    docs: (viewName, step) ->
+        view = DOCSVIEWS[viewName]
+
         if step != null
-            @.appView.update @.docsView
-            @.docsView.goTo(step - 1)
-            @.currentPage = @.pages.indexOf "docs/#{ step }"
+            @.appView.update view
+            view.goTo(step - 1)
+            @.currentPage = @.pages.indexOf "docs/#{ viewName }/#{ step }"
         else
-            @.navigate "docs/1", trigger: true
+            @.navigate "docs/#{ viewName }/1", trigger: true
 
     defaultRoute: (action) ->
 
         if action of TEMPLATES
-            @.appView.update @.views[action]
+            @.appView.update @.templateViews[action]
 
             @.currentPage = @pages.indexOf action
         else
