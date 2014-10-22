@@ -1,0 +1,17 @@
+#thanks-slide {
+  text-align: center;
+  color: white; }
+  #thanks-slide table {
+    margin: auto; }
+    #thanks-slide table td {
+      color: white;
+      text-align: center; }
+  #thanks-slide .thanks {
+    font-size: 40vh;
+    padding-top: 10vh; }
+  #thanks-slide .twitter,
+  #thanks-slide .slides {
+    padding-top: 2vh;
+    font-size: 7vh; }
+
+/*# sourceMappingURL=thanks.css.map */

@@ -1,0 +1,17 @@
+#shameless-plug-slide {
+  background-color: white;
+  text-align: center; }
+  #shameless-plug-slide img {
+    height: 80vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -5vh; }
+  #shameless-plug-slide .subtitle {
+    font-size: 10vh;
+    font-weight: bold; }
+  #shameless-plug-slide a:link,
+  #shameless-plug-slide a:visited,
+  #shameless-plug-slide a:active {
+    color: #092E20; }
+
+/*# sourceMappingURL=shameless-plug.css.map */

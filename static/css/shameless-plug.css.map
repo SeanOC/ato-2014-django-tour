@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,qBAAqB;EACjB,gBAAgB,EAAE,KAAK;EACvB,UAAU,EAAE,MAAM;EAElB,yBAAG;IACC,MAAM,EAAE,IAAI;IACZ,WAAW,EAAE,IAAI;IACjB,YAAY,EAAE,IAAI;IAClB,UAAU,EAAE,IAAI;EAEpB,+BAAS;IACL,SAAS,EAAE,IAAI;IACf,WAAW,EAAE,IAAI;EAErB;;gCAAO;IAGH,KAAK,EAAE,OAAO",
+"sources": ["../sass/shameless-plug.sass"],
+"names": [],
+"file": "shameless-plug.css"
+}

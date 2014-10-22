@@ -15,6 +15,8 @@ TEMPLATES =
     'not-cms': require './templates/not-cms.hbs'
     'framework': require './templates/framework.hbs'
     'opinionated-framework': require './templates/opinionated-framework.hbs'
+    'shameless-plug': require './templates/shameless-plug.hbs'
+    'thanks': require './templates/thanks.hbs'
 
 DOCSVIEWS =
     'index': new DocsView 
@@ -72,11 +74,132 @@ DOCSVIEWS =
             '#s-workflow .highlight-python',
             '#s-migration-files .highlight-python',
         ]
-    'models-bonus': new DocsView 
+    'segway-1': new DocsView 
         targetURL: 'django-docs/index.html'
         steps: [
             '#s-the-model-layer li:nth-child(5)',
             '#s-the-model-layer li:nth-child(6)',
+            '#s-the-view-layer',
+        ]
+    'urls': new DocsView
+        targetURL: 'django-docs/topics/http/urls.html'
+        steps: [
+            'body',
+            '#s-example .highlight-python',
+            '#s-specifying-defaults-for-view-arguments .highlight-python',
+            '#s-reverse-resolution-of-urls .highlight-python:first',
+            '#s-reverse-resolution-of-urls .highlight',
+            '#s-including-other-urlconfs .highlight-python:first',
+        ]
+    'views': new DocsView
+        targetURL: 'django-docs/topics/http/views.html',
+        steps: [
+            'body',
+            '#s-a-simple-view .highlight-python',
+            '#s-returning-errors .highlight-python:first',
+            '#s-the-http404-exception .highlight-python',
+        ]
+    'view-shortcuts': new DocsView
+        targetURL: 'django-docs/topics/http/shortcuts.html'
+        steps: [
+            'body',
+            '#s-render-to-response .highlight-python'
+        ]
+    'cbv': new DocsView
+        targetURL: 'django-docs/topics/class-based-views/index.html'
+        steps: [
+            'body',
+            '#s-simple-usage-in-your-urlconf .highlight-python',
+            '#s-subclassing-generic-views .highlight-python:first',
+            '#s-subclassing-generic-views .highlight-python',
+        ]
+    'segway-2': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            '#s-the-view-layer li:nth-child(4)',
+            '#s-the-view-layer li:nth-child(3)',
+            '#s-the-view-layer li:nth-child(6)',
+            '#s-the-template-layer',
+        ]
+    'templates': new DocsView
+        targetURL: 'django-docs/topics/templates.html'
+        steps: [
+            'body',
+            '#s-the-django-template-language .highlight:first',
+        ]
+    'segway-3': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            '#s-the-template-layer li:nth-child(1)',
+            '#s-the-template-layer li:nth-child(2)',
+            '#s-forms',
+        ]
+    'forms': new DocsView
+        targetURL: 'django-docs/topics/forms/index.html'
+        steps: [
+            'body',
+            '#s-the-form-class .highlight:first',
+            '#s-the-form-class .highlight',
+            '#s-the-view .highlight-python:first',
+            '#s-the-template .highlight',
+        ]
+    'model-forms': new DocsView
+        targetURL: 'django-docs/topics/forms/modelforms.html'
+        steps: [
+            'body',
+            '#s-modelform .highlight:first',
+        ]
+    'segway-4': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            '#s-forms li:nth-child(1)',
+            '#s-forms li:nth-child(2)',
+            '#s-forms li:nth-child(3)',
+            '#s-the-development-process',
+            '#s-the-admin',
+        ]
+    'admin': new DocsView
+        targetURL: 'django-docs/ref/contrib/admin/index.html'
+        steps: [
+            'body',
+            '#s-modeladmin-options img:first',
+            '#s-modeladmin-options img:nth(1)',
+        ]
+    'segway-5': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            '#s-the-admin',
+            '#s-security',
+            '#s-internationalization-and-localization',
+            '#s-performance-and-optimization',
+            '#s-python-compatibility',
+            '#s-geographic-framework',
+        ]
+    'geo-django': new DocsView
+        targetURL: 'django-docs/ref/contrib/gis/tutorial.html'
+        steps: [
+            'body',
+            '#s-spatial-lookups .highlight:nth(2)',
+        ]
+    'segway-6': new DocsView 
+        targetURL: 'django-docs/index.html'
+        steps: [
+            '#s-geographic-framework',
+            '#s-common-web-application-tools',
+            '#s-common-web-application-tools li:nth-child(1)',
+            '#s-common-web-application-tools li:nth-child(2)',
+            '#s-common-web-application-tools li:nth-child(3)',
+            '#s-common-web-application-tools li:nth-child(4)',
+            '#s-common-web-application-tools li:nth-child(5)',
+            '#s-common-web-application-tools li:nth-child(6)',
+            '#s-common-web-application-tools li:nth-child(7)',
+            '#s-common-web-application-tools li:nth-child(8)',
+            '#s-common-web-application-tools li:nth-child(9)',
+            '#s-common-web-application-tools li:nth-child(10)',
+            '#s-common-web-application-tools li:nth-child(11)',
+            '#s-common-web-application-tools li:nth-child(12)',
+            '#s-other-core-functionalities',
+            '#s-the-django-open-source-project'
         ]
 
 module.exports = Backbone.Router.extend
@@ -97,7 +220,23 @@ module.exports = Backbone.Router.extend
         'docs/queries/*',
         'docs/raw-queries/*',
         'docs/db-migrations/*',
-        'docs/models-bonus/*',
+        'docs/segway-1/*',
+        'docs/urls/*',
+        'docs/views/*',
+        'docs/view-shortcuts/*',
+        'docs/cbv/*',
+        'docs/segway-2/*',
+        'docs/templates/*',
+        'docs/segway-3/*',
+        'docs/forms/*',
+        'docs/model-forms/*',
+        'docs/segway-4/*',
+        'docs/admin/*',
+        'docs/segway-5/*',
+        'docs/geo-django/*',
+        'docs/segway-6/*',
+        'shameless-plug',
+        'thanks',
     ]
 
     initialize: (options) ->
