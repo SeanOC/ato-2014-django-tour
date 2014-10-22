@@ -1,0 +1,21 @@
+#not-cms-slide {
+  margin-top: 20vh;
+  text-align: center;
+  line-height: 30vh;
+  border: 0.1px solid white; }
+  #not-cms-slide table {
+    margin: auto; }
+  #not-cms-slide .left-item,
+  #not-cms-slide .center-item,
+  #not-cms-slide .right-item {
+    display: inline;
+    color: white;
+    font-family: "Source Code Pro";
+    font-size: 13vh;
+    line-height: 30vh;
+    vertical-align: middle; }
+  #not-cms-slide .left-item img {
+    display: inline;
+    height: 20vh; }
+
+/*# sourceMappingURL=not-cms.css.map */

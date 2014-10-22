@@ -13,6 +13,17 @@ module.exports = Backbone.View.extend
         '#s-the-view-layer',
         '#s-the-template-layer',
         '#s-forms',
+        '#s-the-development-process',
+        '#s-the-admin',
+        '#s-security',
+        '#s-internationalization-and-localization',
+        '#s-performance-and-optimization',
+        '#s-python-compatibility',
+        '#s-geographic-framework',
+        '#s-common-web-application-tools',
+        '#s-other-core-functionalities',
+        '#s-the-django-open-source-project',
+        '#s-the-model-layer',
     ]
 
     initialize: (options) ->

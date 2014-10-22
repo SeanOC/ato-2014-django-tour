@@ -17,6 +17,20 @@ a:link {
   text-decoration: none;
   color: inherit; }
 
+/* latin-ext */
+@font-face {
+  font-family: "Source Code Pro";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Source Code Pro"), local("SourceCodePro-Regular"), url(../fonts/source-code-pro-ext.woff2) format("woff2");
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF; }
+/* latin */
+@font-face {
+  font-family: "Source Code Pro";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Source Code Pro"), local("SourceCodePro-Regular"), url(../fonts/source-code-pro.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
 #title-slide {
   color: white;
   text-align: center; }
@@ -81,7 +95,74 @@ a:link {
   #django-slide img {
     margin-left: auto;
     margin-right: auto;
-    height: 50vh;
-    margin-top: 10vh; }
+    width: 80vw;
+    margin-top: 20vh; }
+
+#python-slide {
+  background-color: white;
+  text-align: center; }
+  #python-slide img {
+    margin-left: 10.5vw;
+    width: 80vw;
+    margin-top: 20vh; }
+
+#not-cms-slide {
+  margin-top: 20vh;
+  text-align: center;
+  line-height: 30vh;
+  border: 0.1px solid white; }
+  #not-cms-slide table {
+    margin: auto; }
+  #not-cms-slide .left-item,
+  #not-cms-slide .center-item,
+  #not-cms-slide .right-item {
+    display: inline;
+    color: white;
+    font-family: "Source Code Pro";
+    font-size: 13vh;
+    line-height: 30vh;
+    vertical-align: middle; }
+  #not-cms-slide .left-item img {
+    display: inline;
+    height: 20vh; }
+
+#framework-slide {
+  margin-top: 20vh;
+  text-align: center;
+  line-height: 30vh;
+  border: 0.1px solid white; }
+  #framework-slide table {
+    margin: auto; }
+  #framework-slide .left-item,
+  #framework-slide .center-item,
+  #framework-slide .right-item {
+    display: inline;
+    color: white;
+    font-family: "Source Code Pro";
+    font-size: 13vh;
+    line-height: 30vh;
+    vertical-align: middle; }
+  #framework-slide .left-item img {
+    display: inline;
+    height: 20vh; }
+
+#opinionated-framework-slide {
+  margin-top: 20vh;
+  text-align: center;
+  line-height: 30vh;
+  border: 0.1px solid white; }
+  #opinionated-framework-slide table {
+    margin: auto; }
+  #opinionated-framework-slide .left-item,
+  #opinionated-framework-slide .center-item,
+  #opinionated-framework-slide .right-item {
+    display: inline;
+    color: white;
+    font-family: "Source Code Pro";
+    font-size: 12vh;
+    vertical-align: middle; }
+  #opinionated-framework-slide .left-item img {
+    display: inline;
+    height: 20vh; }
 
 /*# sourceMappingURL=main.css.map */

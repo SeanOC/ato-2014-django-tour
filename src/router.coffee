@@ -8,9 +8,13 @@ SimpleTemplateView = require './views/simpleTemplate.coffee'
 DocsView = require './views/docs.coffee'
 
 TEMPLATES = 
-    title: require './templates/title.hbs'
-    who: require './templates/who.hbs'
-    django: require './templates/django.hbs'
+    'title': require './templates/title.hbs'
+    'who': require './templates/who.hbs'
+    'django': require './templates/django.hbs'
+    'python': require './templates/python.hbs'
+    'not-cms': require './templates/not-cms.hbs'
+    'framework': require './templates/framework.hbs'
+    'opinionated-framework': require './templates/opinionated-framework.hbs'
 
 module.exports = Backbone.Router.extend
     routes:
@@ -22,12 +26,27 @@ module.exports = Backbone.Router.extend
         'title',
         'who',
         'django',
+        'python',
+        'not-cms',
+        'framework',
+        'opinionated-framework',
         'docs/1',
         'docs/2',
         'docs/3',
         'docs/4',
         'docs/5',
         'docs/6',
+        'docs/7',
+        'docs/8',
+        'docs/9',
+        'docs/10',
+        'docs/11',
+        'docs/12',
+        'docs/13',
+        'docs/14',
+        'docs/15',
+        'docs/16',
+        'docs/17',
     ]
 
     initialize: (options) ->
@@ -79,7 +98,8 @@ module.exports = Backbone.Router.extend
         @.currentPage++
 
         if @.currentPage >= @.pages.length
-            @.currentPage = 0
+            @.currentPage--
+            return
 
         @.navigate(@.pages[@.currentPage],  trigger: true)
 
@@ -87,6 +107,7 @@ module.exports = Backbone.Router.extend
         @.currentPage--
 
         if @.currentPage < 0
-            @.currentPage = @.pages.length - 1
+            @.currentPage++
+            return
 
         @.navigate(@.pages[@.currentPage],  trigger: true)

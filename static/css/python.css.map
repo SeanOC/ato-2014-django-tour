@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,aAAa;EACT,gBAAgB,EAAE,KAAK;EACvB,UAAU,EAAE,MAAM;EAElB,iBAAG;IACC,WAAW,EAAE,MAAM;IACnB,KAAK,EAAE,IAAI;IACX,UAAU,EAAE,IAAI",
+"sources": ["../sass/python.sass"],
+"names": [],
+"file": "python.css"
+}

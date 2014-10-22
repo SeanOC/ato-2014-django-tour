@@ -1,0 +1,20 @@
+#opinionated-framework-slide {
+  margin-top: 20vh;
+  text-align: center;
+  line-height: 30vh;
+  border: 0.1px solid white; }
+  #opinionated-framework-slide table {
+    margin: auto; }
+  #opinionated-framework-slide .left-item,
+  #opinionated-framework-slide .center-item,
+  #opinionated-framework-slide .right-item {
+    display: inline;
+    color: white;
+    font-family: "Source Code Pro";
+    font-size: 12vh;
+    vertical-align: middle; }
+  #opinionated-framework-slide .left-item img {
+    display: inline;
+    height: 20vh; }
+
+/*# sourceMappingURL=opinionated-framework.css.map */
